@@ -27,6 +27,7 @@ $(document).ready(function() {
         var $service_id_dropbox = $(this).find('#yzu2').attr("data-did");
         var $folder_id_gdriver = $(this).find('#yzu2').attr("data-gfolder");
         var $folder_id_dropbox = $(this).find('#yzu2').attr("data-dfolder");
+        var uid = $(this).find('#yzu2').attr("data-uid");
 
         console.log()
 
@@ -58,7 +59,8 @@ $(document).ready(function() {
                             Authorization: 'ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin'
                         }
                     }).then(function(res) {
-                        callback(null, 1);
+
+                        callback(null, res);
                     });
                 },
 
@@ -82,149 +84,178 @@ $(document).ready(function() {
                             Authorization: 'ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin'
                         }
                     }).then(function(res) {
-                        callback(null, 2);
+                        callback(null, res);
                     });
                 }
             }, function(err, results) {
                 console.log(err);
                 console.log(results);
+                console.log(results.google.account);
+                $.ajax({
+                    url: "/users/" + uid + "/uploads",
+                    data: {
+                        gservice: results.google.account,
+                        dservice: results.dropbox.account,
+                        gfid: results.google.id,
+                        dfid: results.dropbox.id,
+                        fname: results.google.name,
+                        mimetype: results.google.mime_type
+                    },
+                    type: "POST"
+                }).done(function(res) {
+                    window.location = "/";                    
+                });
+
             });
         };
         fr.readAsArrayBuffer(file);
     });
 
-$('.arthur').on('click', function(e) {
-	// download
-	 console.log("download...");
-    var $service_id_gdriver = $(this).attr("data-gid");
-    var $service_id_dropbox = $(this).attr("data-did");
-    var $file_id_gdriver = $(this).attr("data-gfileid");
-    var $file_id_dropbox = $(this).attr("data-dfileid");
-    var $filename = $(this).attr("data-filename");
-   
-    async.parallel({
-            google: function(callback) {
-                console.log("google dn");
-                //google
-                requestUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_gdriver + "/files/" + $file_id_gdriver + "/contents";
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", requestUrl);
-                xhr.responseType = "arraybuffer";
-                xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
-                
-                xhr.onload = function() {
-                    //console.log(xhr);
-                    if (this.status === 200) {
-                        // console.log( xhr.responseType );
-                        contentType = xhr.getResponseHeader("Content-Type");
-                        ab1 = xhr.response;
-                        //var objectUrl = URL.createObjectURL(blob);
-                        //window.open(objectUrl);
-                        console.log("google dn finish");
-                        callback(null, 1);
-                    }
-                };
-                xhr.send();
-            },
-            drop: function(callback) {
-                console.log("dropbox dn");
-                //dropbox
-                dropUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_dropbox + "/files/"+ $file_id_dropbox +"/contents";
-                var xhr2 = new XMLHttpRequest();
-                xhr2.open("GET", dropUrl);
-                xhr2.responseType = "arraybuffer";
-                xhr2.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+    $('.arthur').on('click', function(e) {
+        // download
+        console.log("download...");
+        var $service_id_gdriver = $(this).attr("data-gid");
+        var $service_id_dropbox = $(this).attr("data-did");
+        var $file_id_gdriver = $(this).attr("data-gfileid");
+        var $file_id_dropbox = $(this).attr("data-dfileid");
+        var $filename = $(this).attr("data-filename");
 
-                xhr2.onload = function() {
-                    //console.log(xhr2);
-                    if (this.status === 200) {
-                        // console.log( xhr2.responseType );
-                        ab2 = xhr2.response;
-                		console.log("dropbox dn finish");
-                        callback(null, 2);
-                    }
-                };
-                xhr2.send();
-            }
-        },
-        function(err, results) {
-            // debug
-            console.log(err);
-            console.log(results);
-            // debug end
-            var myBlobBuilder = new MyBlobBuilder();FOngWn5W_8EbPEbtQbU7EoAx2oF5HY8N8luEx3CffR4s=
-            myBlobBuilder.append(ab1);
-            myBlobBuilder.append(ab2);
+        async.parallel({
+                google: function(callback) {
+                    console.log("google dn");
+                    //google
+                    requestUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_gdriver + "/files/" + $file_id_gdriver + "/contents";
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", requestUrl);
+                    xhr.responseType = "arraybuffer";
+                    xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
 
-            var blob = myBlobBuilder.getBlob(contentType);
-            // var fileName = 'test';
-            saveAs(blob, $filename);
-        });
-});
-
-$('.jamie').on('click', function(e) {
-    console.log("delete action");
-    var $service_id_gdriver = $(this).attr("data-gid");
-    var $service_id_dropbox = $(this).attr("data-did");
-    var $file_id_gdriver = $(this).attr("data-gfileid");
-    var $file_id_dropbox = $(this).attr("data-dfileid");
-    
-    async.parallel({
-            google: function(callback) {
-                //google
-                console.log("google delete");
-                requestUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_gdriver + "/files/" + $file_id_gdriver;
-                var xhr = new XMLHttpRequest();
-                xhr.open("DELETE", requestUrl);
-                xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
-                
-                xhr.onload = function() {
-                    if (this.status === 200) {
+                    xhr.onload = function() {
                         //console.log(xhr);
-                        console.log("google delete finish");
-                        callback(null, 1);
-                    }
-                };
-                xhr.send();
-            },
-            drop: function(callback) {
-                //dropbox
-                console.log("dropbox delete");
-                dropUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_dropbox + "/files/"+ $file_id_dropbox;
-                var xhr2 = new XMLHttpRequest();
-                xhr2.open("DELETE", dropUrl);
-                xhr2.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+                        if (this.status === 200) {
+                            // console.log( xhr.responseType );
+                            contentType = xhr.getResponseHeader("Content-Type");
+                            ab1 = xhr.response;
+                            //var objectUrl = URL.createObjectURL(blob);
+                            //window.open(objectUrl);
+                            console.log("google dn finish");
+                            callback(null, 1);
+                        }
+                    };
+                    xhr.send();
+                },
+                drop: function(callback) {
+                    console.log("dropbox dn");
+                    //dropbox
+                    dropUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_dropbox + "/files/" + $file_id_dropbox + "/contents";
+                    var xhr2 = new XMLHttpRequest();
+                    xhr2.open("GET", dropUrl);
+                    xhr2.responseType = "arraybuffer";
+                    xhr2.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
 
-                xhr2.onload = function() {
-                    if (this.status === 200) {
+                    xhr2.onload = function() {
                         //console.log(xhr2);
-                        console.log("dropbox delete finish");
-                        callback(null, 2);
-                    }
-                };
-                xhr2.send();
-            }
-        },
-        function(err, results) {
-            // debug
-            console.log(err);
-            console.log(results);
-        });
-});
+                        if (this.status === 200) {
+                            // console.log( xhr2.responseType );
+                            ab2 = xhr2.response;
+                            console.log("dropbox dn finish");
+                            callback(null, 2);
+                        }
+                    };
+                    xhr2.send();
+                }
+            },
+            function(err, results) {
+                // debug
+                console.log(err);
+                console.log(results);
+                // debug end
+                var myBlobBuilder = new MyBlobBuilder();
+                FOngWn5W_8EbPEbtQbU7EoAx2oF5HY8N8luEx3CffR4s =
+                    myBlobBuilder.append(ab1);
+                myBlobBuilder.append(ab2);
+
+                var blob = myBlobBuilder.getBlob(contentType);
+                // var fileName = 'test';
+                saveAs(blob, $filename);
+            });
+    });
+
+    $('.jamie').on('click', function(e) {
+        console.log("delete action");
+        var $service_id_gdriver = $(this).attr("data-gid");
+        var $service_id_dropbox = $(this).attr("data-did");
+        var $file_id_gdriver = $(this).attr("data-gfileid");
+        var $file_id_dropbox = $(this).attr("data-dfileid");
+        var $fid = $(this).attr("data-id");
+
+        async.parallel({
+                google: function(callback) {
+                    //google
+                    console.log("google delete");
+                    requestUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_gdriver + "/files/" + $file_id_gdriver;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("DELETE", requestUrl);
+                    xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+
+                    xhr.onload = function(res) {
+                        console.log("google delete222");
+                        if (this.status === 204) {
+                            console.log(res);
+                            console.log("google delete finish");
+                            callback(null, res);
+                        }
+                    };
+                    xhr.send();
+                },
+                drop: function(callback) {
+                    //dropbox
+                    console.log("dropbox delete");
+                    dropUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_dropbox + "/files/" + $file_id_dropbox;
+                    var xhr2 = new XMLHttpRequest();
+                    xhr2.open("DELETE", dropUrl);
+                    xhr2.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+
+                    xhr2.onload = function(res) {
+                        if (this.status === 204) {
+                            //console.log(xhr2);
+                            console.log("dropbox delete finish");
+                            callback(null, res);
+                        }
+                    };
+                    xhr2.send();
+                }
+            },
+            function(err, results) {
+                // debug
+                console.log(err);
+                console.log(results);
+                 $.ajax({
+                        url: "/uploads/"+ $fid,
+                        type: "DELETE"
+                 }).done(function(res) {
+                    window.location = "/";                    
+                });
+                
+
+            });
+    });
 });
 //lib
 var MyBlobBuilder = function() {
-  this.parts = [];
+    this.parts = [];
 };
 
 MyBlobBuilder.prototype.append = function(part) {
-  this.parts.push(part);
-  this.blob = undefined; // Invalidate the blob
+    this.parts.push(part);
+    this.blob = undefined; // Invalidate the blob
 };
 
 MyBlobBuilder.prototype.getBlob = function(contentType) {
-  if (!this.blob) {
-    this.blob = new Blob(this.parts, { type: contentType });
-  }
-  return this.blob;
+    if (!this.blob) {
+        this.blob = new Blob(this.parts, {
+            type: contentType
+        });
+    }
+    return this.blob;
 };

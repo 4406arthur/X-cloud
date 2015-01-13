@@ -48,8 +48,6 @@ module ServicesHelper
 
 		return jres["objects"]
 
-
 	end
-
 
 end

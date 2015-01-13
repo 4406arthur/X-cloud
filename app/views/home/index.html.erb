@@ -1,7 +1,7 @@
 <% $count = 0 %>
 
 <% if user_signed_in? %>
-  <% if current_user.services.exists? %>
+  <% if current_user.services.count == 2 %>
     <% @Gservice = current_user.services.where( :service_name => 'gdrive').first()  %>
     <% @Dservice = current_user.services.where( :service_name => 'dropbox').first() %>
   <!-- search_field -->
@@ -19,7 +19,7 @@
 		    <label for="exampleInputFile">File Upload</label>
 		    <input type="file" id="file" name="file" class="parameter">
 		  </div>
-		  <button type="submit" class="btn btn-default up" id = "yzu2" data-gid= '<%= @Gservice.service_id  %>' data-did= '<%= @Dservice.service_id  %>' data-gfolder='<%= @Gservice.folder_id %>' data-dfolder='<%= @Dservice.folder_id %>'>Submit</button>
+		  <button type="submit" class="btn btn-default up" id = "yzu2" data-uid= '<%= current_user.id %>' data-gid= '<%= @Gservice.service_id  %>' data-did= '<%= @Dservice.service_id  %>' data-gfolder='<%= @Gservice.folder_id %>' data-dfolder='<%= @Dservice.folder_id %>'>Submit</button>
 		</form>
 	</div>
      
@@ -31,19 +31,10 @@
           </div>
         </div>
     
-          
-            <%#=  service.service_name %>
-          <% files = KloudlessList(@Gservice.service_id, @Gservice.folder_id) %>
-          <% dfiles = KloudlessList(@Dservice.service_id, @Dservice.folder_id) %>
-          
-         
-          <% files.sort_by!{ |hsh| hsh["name"] }%>
-          <% dfiles.sort_by!{ |hsh| hsh["name"] } %>  
+      
 
-            <% files.zip(dfiles).each do |file,dfile| %>
-              <%#= file %> 
-              <%#= dfile %>
-
+            <% @files.each do |file| %>
+    
               <% if $count.to_i() % 3 == 0%>
                 <div class="row">
               <% end%>
@@ -51,13 +42,13 @@
                 <div class="thumbnail">
                     <img src="X.png" style="width:150px;height:auto;" alt="...">
                     <div class="caption">
-                        <h3 style="word-break:break-word;"><%= file["name"] %></h3>
-                        <p> Modified: <%= file["modified"] %></p>
-                        <p> Type: <%= file["mime_type"] %></p>
+                        <h3 style="word-break:break-word;"><%= file.fname %></h3>
+                        <p> Modified: <%= file.created_at %></p>
+                        <p> Type: <%= file.mimetype %></p>
                         <p>
-                          <a href="#" class="btn btn-primary arthur" role="button" data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file["id"] %>' data-dfileid='<%= dfile["id"] %>' data-filename='<%= file["name"] %>'  >Downloads</a> 
-                          <a href="#" class="btn btn-danger jamie" role="button"
-                           data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file["id"] %>' data-dfileid='<%= dfile["id"] %>' >Destroy!</a>
+                          <a href="#" class="btn btn-primary arthur" role="button" data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file.gfid %>' data-dfileid='<%= file.dfid %>' data-filename='<%= file.fname %>'  >Downloads</a> 
+                          <a href="#" class="btn btn-danger jamie" role="button" data-id='<%= file.id %>'
+                           data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file.gfid %>' data-dfileid='<%= file.dfid %>' >Destroy!</a>
                         </p>
                     </div>
                 </div>
@@ -139,6 +130,7 @@ Kloudless.authenticator(e, {
     $service_id = result.id;
     $service_name = result.service;
 
+
     $.ajax({
         url: "https://api.kloudless.com:443/v0/accounts/" + $service_id + "/folders/?conflict_if_exists=true",
         beforeSend: function(xhr) {
@@ -163,6 +155,8 @@ Kloudless.authenticator(e, {
                 folder_id: $folder_id
             },
             type: "POST"
+        }).done(function(req){
+            window.location = "/";
         });
     });
 

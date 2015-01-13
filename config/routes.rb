@@ -11,11 +11,14 @@ Rails.application.routes.draw do
 
   resources :users do
     resources :services, shallow: true
+    resources :uploads, shallow: true
   end
 
 
   match '/users/services', to:'services#create',  via: 'POST'
   match '/users/services/search', to:'home#search',  via: 'GET'
+  match '/users/services', to:'services#create',  via: 'POST'
+  
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

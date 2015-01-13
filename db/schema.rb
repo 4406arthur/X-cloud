@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150111070854) do
+ActiveRecord::Schema.define(version: 20150113131135) do
 
   create_table "services", force: true do |t|
     t.integer  "user_id"
@@ -27,6 +27,13 @@ ActiveRecord::Schema.define(version: 20150111070854) do
   create_table "uploads", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "gservice"
+    t.string   "dservice"
+    t.string   "gfid"
+    t.string   "dfid"
+    t.string   "fname"
+    t.string   "mimetype"
+    t.integer  "user_id"
   end
 
   create_table "users", force: true do |t|
