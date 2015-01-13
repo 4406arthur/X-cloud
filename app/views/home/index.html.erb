@@ -62,8 +62,9 @@
                         <p> Modified: <%= file["modified"] %></p>
                         <p> Type: <%= file["mime_type"] %></p>
                         <p>
-                          <a href="#" class="btn btn-primary arthur" role="button" data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file["id"] %>' data-dfileid='<%= dfile["id"] %>' data-filename='<%= file["name"] %>'id='YZUdownload'  >Downloads</a> 
-                          <a href="#" class="btn btn-default" role="button">Destroy</a>
+                          <a href="#" class="btn btn-primary arthur" role="button" data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file["id"] %>' data-dfileid='<%= dfile["id"] %>' data-filename='<%= file["name"] %>'  >Downloads</a> 
+                          <a href="#" class="btn btn-danger jamie" role="button"
+                           data-gid='<%= @Gservice.service_id %>' data-did='<%= @Dservice.service_id %>' data-gfileid='<%= file["id"] %>' data-dfileid='<%= dfile["id"] %>' >Destroy!</a>
                         </p>
                     </div>
                 </div>

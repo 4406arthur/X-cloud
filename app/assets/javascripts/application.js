@@ -111,7 +111,7 @@ $('.arthur').on('click', function(e) {
                 xhr.open("GET", requestUrl);
                 xhr.responseType = "arraybuffer";
                 xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
-                var datas = [];
+                
                 xhr.onload = function() {
                     //console.log(xhr);
                     if (this.status === 200) {
@@ -160,16 +160,62 @@ $('.arthur').on('click', function(e) {
             // var fileName = 'test';
             saveAs(blob, $filename);
         });
-
-   });
-
-
 });
 
+$('.jamie').on('click', function(e) {
+    console.log("delete action");
+    var $service_id_gdriver = $(this).attr("data-gid");
+    var $service_id_dropbox = $(this).attr("data-did");
+    var $file_id_gdriver = $(this).attr("data-gfileid");
+    var $file_id_dropbox = $(this).attr("data-dfileid");
+    
+    async.parallel({
+            google: function(callback) {
+                //google
+                console.log("google delete");
+                requestUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_gdriver + "/files/" + $file_id_gdriver;
+                var xhr = new XMLHttpRequest();
+                xhr.open("DELETE", requestUrl);
+                xhr.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+                
+                xhr.onload = function() {
+                    if (this.status === 200) {
+                        //console.log(xhr);
+                        console.log("google delete finish");
+                        callback(null, 1);
+                    }
+                };
+                xhr.send();
+            },
+            drop: function(callback) {
+                //dropbox
+                console.log("dropbox delete");
+                dropUrl = "https://api.kloudless.com:443/v0/accounts/" + $service_id_dropbox + "/files/"+ $file_id_dropbox;
+                var xhr2 = new XMLHttpRequest();
+                xhr2.open("DELETE", dropUrl);
+                xhr2.setRequestHeader("Authorization", "ApiKey CbdAL_JeRmFRx0ZuxP1wLAzbVv5IeyrVXtdJ1cigadzDOAin");
+
+                xhr2.onload = function() {
+                    if (this.status === 200) {
+                        //console.log(xhr2);
+                        console.log("dropbox delete finish");
+                        callback(null, 2);
+                    }
+                };
+                xhr2.send();
+            }
+        },
+        function(err, results) {
+            // debug
+            console.log(err);
+            console.log(results);
+        });
+});
+});
 //lib
 var MyBlobBuilder = function() {
   this.parts = [];
-}
+};
 
 MyBlobBuilder.prototype.append = function(part) {
   this.parts.push(part);
