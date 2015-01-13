@@ -12,26 +12,19 @@
 		<% end %>
 	</div>
 
+    
+    <div class="col-md-6 col-md-offset-3"> 
+		<form id="yzu" method="get" enctype="multipart/form-data" class="ugly">
+		  <div class="form-group">
+		    <label for="exampleInputFile">File Upload</label>
+		    <input type="file" id="file" name="file" class="parameter">
+		  </div>
+		  <button type="submit" class="btn btn-default up" id = "yzu2" data-gid= '<%= @Gservice.service_id  %>' data-did= '<%= @Dservice.service_id  %>' data-gfolder='<%= @Gservice.folder_id %>' data-dfolder='<%= @Dservice.folder_id %>'>Submit</button>
+		</form>
+	</div>
+     
+   
 
-	<form id="yzu" method="get" enctype="multipart/form-data" >
-	    <table class="fullwidth">
-	        <tbody class="operation-params">
-	            <tr>
-	                <td class="code required">file</td>
-	                <td>
-	                    <input id="file" type="file" name="file" class="parameter">
-	                </td>
-	            </tr>
-	            <tr>
-	              <td >Submit </td>
-	              <input id = "yzu2" data-gid= '<%= @Gservice.service_id  %>' data-did= '<%= @Dservice.service_id  %>' data-gfolder='<%= @Gservice.folder_id %>' data-dfolder='<%= @Dservice.folder_id %>' type="submit">
-	              <!-- <td>Submit</td> -->
-	              <!-- <td><input type="submit"/></td> -->
-	            </tr>
-	        </tbody>
-	    </table>
-    </form>
-       
     <div class="container">
         <div class="row">
           <div class="col-md-6 col-md-offset-5">
@@ -104,11 +97,25 @@
 <script>
 
 $(function() {
+  $(".ugly").hide();
+
   $(".done").hide(); 
   
   $( "#submit" ).click(function() {
-  	 $( ".done" ).click();
+  	 $(".done" ).click();
   });
+
+  $("#fileupload").click(function(){
+  	 $("#file").click();
+
+  });
+
+  $("#file").on("change",function(){
+  	 $(".up").click();
+
+  });
+
+
 });
 
 
