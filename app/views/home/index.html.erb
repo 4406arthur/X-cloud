@@ -111,24 +111,27 @@ $(function() {
 
 
 
+    var e = document.getElementById("auth-button");
 
+    // You can also use jQuery:
+    e = $('#auth-button');
 
-var e = document.getElementById("auth-button");
-
-// You can also use jQuery:
-
-
-Kloudless.authenticator(e, {
-    'app_id': 'qNxuBpHOy8YUkhq5UaxNCsjGtZW1oC_4922O6YqqFDHSIzat',
-}, function(err, result) {
-
-    console.log('Yay! I now have a newly authenticated', result.service,
-        'account with id:', result.id); 
+    Kloudless.authenticator(e, {
+        'client_id': 'qNxuBpHOy8YUkhq5UaxNCsjGtZW1oC_4922O6YqqFDHSIzat'    
+    }, function (result) {
+        if (result.error) {
+            console.error('An error occurred:', result.error);
+            return;
+        }
+        console.log('Yay! I now have a newly authenticated', result.account.service,
+            'account with ID', result.account.id);
+           
+  
     <% if user_signed_in? %>
         $user_id = <%= current_user.id %>; 
     <% end %>
-    $service_id = result.id;
-    $service_name = result.service;
+    $service_id = result.account.id;
+    $service_name = result.account.service;
 
 
     $.ajax({
@@ -157,10 +160,10 @@ Kloudless.authenticator(e, {
             type: "POST"
         }).done(function(req){
             window.location = "/";
-        });
+          });
     });
 
-})
+   });
 
 
 </script>
